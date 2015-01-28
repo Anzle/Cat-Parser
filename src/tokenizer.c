@@ -8,6 +8,8 @@
  */
 
 struct TokenizerT_ {
+	char *str; //String inputed to program
+	char *token; //The current token
 };
 
 typedef struct TokenizerT_ TokenizerT;
@@ -27,8 +29,15 @@ typedef struct TokenizerT_ TokenizerT;
  */
 
 TokenizerT *TKCreate( char * ts ) {
-
-  return NULL;
+	if(ts == 0){
+		return NULL;
+	}
+	else {
+		TokenizerT *tokenizer = (TokenizerT *) calloc(1,sizeof(TokenizerT));
+		tokenizer -> str = ts;
+		tokenizer -> token = NULL;
+		return tokenizer;
+	}
 }
 
 /*
@@ -39,6 +48,9 @@ TokenizerT *TKCreate( char * ts ) {
  */
 
 void TKDestroy( TokenizerT * tk ) {
+	free(tk -> str);
+	free(tk -> token);
+	free(tk);
 }
 
 /*
