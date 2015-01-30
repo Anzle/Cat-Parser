@@ -10,7 +10,8 @@
 
 struct TokenizerT_ {
 	char *str; //String inputed to program
-	char *token; //The current token
+	TokenizerT *token; //The current token ?This should be a pointer to the next token in our list
+	char *type; //This is the type of token, points to an entry in the type table
 };
 
 typedef struct TokenizerT_ TokenizerT;
@@ -35,8 +36,9 @@ TokenizerT *TKCreate( char * ts ) {
 	}
 	else {
 		TokenizerT *tokenizer = (TokenizerT *) calloc(1,sizeof(TokenizerT));
-		tokenizer -> str = ts;
+		tokenizer -> str = ts; // Should change this, malloc the size of the input string
 		tokenizer -> token = NULL;
+		tokenizer -> type = NULL;
 		return tokenizer;
 	}
 }
@@ -50,7 +52,7 @@ TokenizerT *TKCreate( char * ts ) {
 
 void TKDestroy( TokenizerT * tk ) {
 	free(tk -> str);
-	free(tk -> token);
+	free(tk -> token); //Should changes this
 	free(tk);
 }
 
