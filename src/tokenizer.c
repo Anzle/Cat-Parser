@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int strloc = 0; //index location of where the tokenizer is in the string
+
 /*
  * Tokenizer type.  You need to fill in the type as part of your implementation.
  */
 
 struct TokenizerT_ {
-	char *str; //String inputed to program
-	TokenizerT *token; //The current token ?This should be a pointer to the next token in our list
+	char *str; //The original string to be parsed
+	char *token; //The current token/piece of the string being analyzed
 	char *type; //This is the type of token, points to an entry in the type table
 };
 
@@ -30,14 +32,19 @@ typedef struct TokenizerT_ TokenizerT;
  * You need to fill in this function as part of your implementation.
  */
 
+ /* Only call this method once, to set up the initial tokenizer. Then the 
+  * TKGetNextToken uses the global string index (strloc declared above)
+  * to keep track of where in str we are and what token to be stored in 
+  * the tokenizer. 
+  */
 TokenizerT *TKCreate( char * ts ) {
 	if(ts == 0){
 		return NULL;
 	}
 	else {
 		TokenizerT *tokenizer = (TokenizerT *) calloc(1,sizeof(TokenizerT));
-		tokenizer -> str = ts; // Should change this, malloc the size of the input string
-		tokenizer -> token = NULL;
+		tokenizer -> str = ts; 
+		tokenizer -> token = NULL; //technically don't need this since gettoken method returns a char*
 		tokenizer -> type = NULL;
 		return tokenizer;
 	}
@@ -52,7 +59,8 @@ TokenizerT *TKCreate( char * ts ) {
 
 void TKDestroy( TokenizerT * tk ) {
 	free(tk -> str);
-	free(tk -> token); //Should changes this
+	free(tk -> token); 
+	free(tk -> type);
 	free(tk);
 }
 
@@ -81,7 +89,27 @@ char *TKGetNextToken( TokenizerT * tk ) {
  */
 
 int main(int argc, char **argv) {
-
-  return 0;
+	if(argc != 2){
+		// input should include a string 
+		printf("Error: Invalid number of arguments.\n");
+	} else {
+		printf("%s\n", argv[1]);
+		//create a tokenizer with the given string
+		TokenizerT *tokenizer = TKCreate(argv[1]); 
+		
+		if(tokenizer != NULL){
+			//go through the string and tokenize it here
+			char *tok = TKGetNextToken(tokenizer);
+			while(tok != 0){
+				//print the token and the type
+			}
+			//destroy the tokenizer. mission complete.
+			TKDestroy(tokenizer);
+		} else {
+			printf("Error building tokenizer.\n");
+		}
+	}
+	
+	return 0;
 }
 
