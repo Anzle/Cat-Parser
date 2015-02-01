@@ -8,54 +8,83 @@
  
  /* Library of String Constants used in Tokenizer*/
  char* WORD = "word";
- char* INTEGER = "integer";
+ char* INT = "integer";
+ char* HEX = "hex";
+ char* OCT = "oct";
+ char* FLOAT = "float";
  
  
  
- /* */
- TokenizerT* genToken(char* ts, char* type){
+ /* This function is a wrapper function to expand the header options provided
+  * by the code given to us by the professor. build token creates a token and then
+  * gives the token a type for use later on  
+  */
+ TokenizerT* buildToken(char* ts, char* type){
 	TokenizerT* t = TKCreate( char * ts );
 	t -> type = type;
 	return t;
  };
  
- /* The function creates a list of tokens to be returned by the parser
+ /* The function creates a token, from the first character of the input string
   Input: String to be parsed
   Output: TokenizerT pointer to the head of the list of tokens
  */
  TokenizerT* stringParse(char* input){
-	TokenizerT* head = NULL, tail = NULL, cur = NULL;
-	
+	TokenizerT* tok = NULL;
 	int length = strlen(input); //length of input string
 	int pos = 0;
-	do{
+	//do{
 		//Input is a word
 		if(isalphainput[pos]){
-			int len=1;
-			while(isalnum(input[++pos])
-				len++; 
+			while(isalnum(input[++pos]) 
 			//Create substring
-			char* token = malloc(sizeof(char)*len+1);
-			cur = genToken(strncpy(input+(pos*sizeof(char), token, len), WORD);
-		}
-		else if (input[pos] > 0x2f && input[pos] < 0x3a){
+			char* token = malloc(sizeof(char)*pos+1);
+			 tok = buildToken(strncpy(input, token, pos), WORD);
+		}		
 			//input is a digit, what kind?
-			
-			if(input[pos] == 0x30){//Check for 0 and 0x/0X
-				if((pos+1) != length && (input[pos+1] == 0x58 || input[pos+1] == 0x78))
-				{/*is Hexadecimal*/}
+		else if (isdigit(input[pos])){
+				//HEX
+			if(input[pos] == 0x30){//Check for 0 
+				pos++; //and 0x/0X, make sure not at the end of the string
+				if((pos) != length && (input[pos] == 0x58 || input[pos] == 0x78))
+				{
+					while(isxdigit(input[++pos]) 
+					char* token = malloc(sizeof(char)*pos+1);
+					tok = buildToken(strncpy(input, token, pos), HEX);	
+					
+				}
+				//OCT
 				else
-				{/*is Octal - Check for error in input*/}
+				{
+					while(isdigit(input[++pos]) 
+					char* token = malloc(sizeof(char)*pos+1);
+					tok = buildToken(strncpy(input, token, pos), OCT);
+				}
 			}
-			
-			//Must check for decimal point/e in the parsing loop function
-			
-		}
+			else{ //The digit is an integer or a float
+				char t = 'd';
+				//INTEGER
+				while(!isspace(input[++pos])){
+					if(isdigit(input[pos]){}
+					//Float
+					else if(toloswer(input[pos]) ==  0x65 || input[pos] == 0x2e){
+						t = 'f'; //is float
+					}
+				}
+				char* token = malloc(sizeof(char)*pos+1);
+				if(t == 'f');
+						tok = buildToken(strncpy(input, token, pos), FLOAT);
+				else
+					tok = buildToken(strncpy(input, token, pos), INT);
+				//Must check for decimal point/e in the parsing loop function
+			}
+		}//End Digit Check
 		switch(input[pos]{
 			//check for the special characters, such as braces and stuffs
 		}
 		
-	}while(pos < length);
+		return tok;
+	//}while(pos < length);
 	
  
  } 
