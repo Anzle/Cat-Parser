@@ -6,25 +6,17 @@
 #include <ctype.h>
 #include <string.h>
 
-/*Globals*/
-int pos = 0; //index location of where the tokenizer is in the string
-char* input; // This will reference the address of argv[1]
-
-/* Library of String Constants used in Tokenizer*/
-char* WORD = "word";
-char* INT = "integer";
-char* HEX = "hex";
-char* OCT = "oct";
-char* FLOAT = "float";
-
-//ect
-
 /*
 * Tokenizer type.  You need to fill in the type as part of your implementation.
+
+** This struct acts as the TokenizerStream
+** It stores the entire original string into the token variable, and then iterates
+** though the stream, keeping track of it's possition with with pos variable
 */
+
 struct TokenizerT_ {
-	char *token; //The current token/piece of the string being analyzed
-	char *type; //This is the type of token, points to an entry in the type table
+	char *token; //The token stream to read from
+	int pos; //
 };
 
 typedef struct TokenizerT_ TokenizerT;
@@ -43,19 +35,18 @@ typedef struct TokenizerT_ TokenizerT;
 * You need to fill in this function as part of your implementation.
 */
 
-/* Only call this method once, to set up the initial tokenizer. Then the
-* TKGetNextToken uses the global string index (strloc declared above)
-* to keep track of where in str we are and what token to be stored in
-* the tokenizer.
-*/
 TokenizerT *TKCreate(char * ts) {
 	if (ts == 0){
 		return NULL;
 	}
 	else {
+		//Should probably check these for existence
 		TokenizerT *tokenizer = (TokenizerT *)calloc(1, sizeof(TokenizerT));
-		tokenizer->token = ts; //technically don't need this since gettoken method returns a char*
-		tokenizer->type = NULL;
+		tokenizer->token = (char*)malloc(sizeof(char*)*(strlen(ts)+1));
+
+
+		strcpy(tokenizer->token, ts); //Copy the TokenStream
+		tokenizer->pos = 0; //the position in the TokenStream
 		return tokenizer;
 	}
 }
@@ -69,95 +60,8 @@ TokenizerT *TKCreate(char * ts) {
 
 void TKDestroy(TokenizerT * tk) {
 	free(tk->token);
-	//free(tk -> type); //no need to free
 	free(tk);
 }
-
-
-/* This function is a wrapper function to expand the header options provided
-* by the code given to us by the professor. build token creates a token and then
-* gives the token a type for use later on
-*/
-TokenizerT* buildToken(char* ts, char* type){
-	TokenizerT* t = TKCreate(ts);
-	t->type = type;
-	return t;
-};
-
-/* The function creates a token, from the first word of the input string
-Input: String to be parsed
-Output: TokenizerT pointer to the created token
-*/
-TokenizerT* stringParse(){
-	TokenizerT* tok = NULL;
-	char* token;
-	int length = strlen(input) - pos; //length of input string
-	int len = 0;
-	//do{
-	//Input is a word
-	if (isalpha(input[pos])){
-		len++;
-		while (isalnum(input[++pos])){ len++; }
-			//Create substring
-		token = malloc(sizeof(char)*len + 1);
-		strncpy(token, input, len);
-		token[len] = '\0';
-		tok = buildToken(token, WORD);
-	}
-	//input is a digit, what kind?
-	else if (isdigit(input[pos])){
-		len++;
-		//HEX
-		if (input[pos] == 0x30){//Check for 0 
-			pos++; //and 0x/0X, make sure not at the end of the string
-			if ((pos) != length && (input[pos] == 0x58 || input[pos] == 0x78))
-			{
-				while (isxdigit(input[++pos])){ len++; }
-				token = malloc(sizeof(char)*len + 1);
-				strncpy(token, input,len);
-				token[len] = '\0';
-				tok = buildToken(token, HEX);
-
-			}
-			//OCT
-			else
-			{
-				while (isdigit(input[++pos])){ len++; }
-				token = malloc(sizeof(char)*len + 1);
-				strncpy(token, input, len);
-				token[len] = '\0';
-				tok = buildToken(token, OCT);
-			}
-		}
-		else{ //The digit is an integer or a float
-			char t = 'd';
-			//INTEGER
-			while (!isspace(input[++pos])){
-				if (isdigit(input[pos])){}
-				//Float
-				else if (tolower(input[pos]) == 0x65 || input[pos] == 0x2e){
-					t = 'f'; //is float
-				}
-			}
-			token = malloc(sizeof(char)*len +1);
-			strncpy(token, input, len);
-			token[len] = '\0';
-			if (t == 'f')
-				tok = buildToken(token, FLOAT);
-			else
-				tok = buildToken(token, INT);
-			//Must check for decimal point/e in the parsing loop function
-		}
-	}//End Digit Check
-	else{
-		switch (input[pos]){
-			//check for the special characters, such as braces and stuffs
-		}
-	}
-	return tok;
-	//}while(pos < length);
-} //END function stringParse
-
 
 /*
 * TKGetNextToken returns the next token from the token stream as a
@@ -169,22 +73,110 @@ TokenizerT* stringParse(){
 * containing the token.  Else it returns 0.
 *
 * You need to fill in this function as part of your implementation.
+
+**THIS Function is supposed to parse the token stream
 */
 
 char *TKGetNextToken(TokenizerT * tk) {
-	char* result = NULL;
-	if (tk != NULL){
-			//Transform tk into a string
-		result = (char*)malloc(sizeof(char)*(strlen(tk->token) + strlen(tk->type) + 3));
+
+	if (tk == NULL || tk->pos == strlen(tk->token))
+		return NULL;
+	
+	int length = 0;
+	int start = tk->pos;
+	char* ret = NULL;
+	char flag= '0';
+
+	/*Beging parsing*/
+	/*Word*/
+	if (isalpha(tk->token[tk->pos])){
+		length++;
+		while (isalnum(tk->token[++tk->pos]))
+			length++;
+		ret = (char*)malloc(sizeof(char*)*(length + 8)); //add 1 for NULL and 7 for "Word_\"\""
+		strcpy(ret, "Word \"");
+		strncat(ret, tk->token+start, length);
+		strcat(ret, "\"\0");
 		
-		strcpy(result, tk->type);
-		strcat(result, " \"");
-		strcat(result, tk->token);
-		strcat(result, "\"");
-			//destory the token tk
-		TKDestroy(tk);
 	}
-	return result;
+	else if (isdigit(tk->token[tk->pos])){
+		length++;
+		/*Begin oct/hex check*/
+		if (tk->token[tk->pos] == 0x30){
+			tk->pos++;
+			
+			if/*Hex*/(tk->token[tk->pos] == 0x58 || tk->token[tk->pos] == 0x78){
+				length++;
+				while (isxdigit(tk->token[++tk->pos]))
+					length++;
+				ret = (char*)malloc(sizeof(char*)*(length + 7)); //add 1 for NULL and 6 for "Hex_\"\""
+				strcpy(ret, "Hex \"");
+				strncat(ret, tk->token + start, length);
+				strcat(ret, "\"\0");
+			}
+
+			else/*OCT*/{
+				while (isdigit(tk->token[++tk->pos]))
+					length++;
+				ret = (char*)malloc(sizeof(char*)*(length + 7)); //add 1 for NULL and 6 for "Oct_\"\""
+				strcpy(ret, "Oct \"");
+				strncat(ret, tk->token + start, length);
+				strcat(ret, "\"\0");
+			}
+		}//End Hex/Oct Check
+		else /*Int and Float*/{
+			
+			while (isdigit(tk->token[++tk->pos]))
+				length++;
+			if (tk->token[tk->pos] == 0x2e){ /*Is there a decimal*/
+				length++;
+				while (isdigit(tk->token[++tk->pos])) /*Keep getting digits*/
+					length++;
+				flag = 'f'; //set to f for float
+			}
+			if (tk->token[tk->pos] ==0x45 || tk->token[tk->pos] == 0x65){
+				length++;
+				tk->pos++;
+				if (tk->token[tk->pos] == 0x2d) /*There can only be a - after the e/E*/
+					length++;
+				while (isdigit(tk->token[++tk->pos])) /*Keep getting digits*/
+					length++;
+				flag = 'f';
+			}
+
+			if (flag == 'f'){
+				ret = (char*)malloc(sizeof(char*)*(length + 9)); //add 1 for NULL and 8 for "Float_\"\""
+				strcpy(ret, "Float \"");
+				strncat(ret, tk->token + start, length);
+				strcat(ret, "\"\0");
+			}
+			else{
+				ret = (char*)malloc(sizeof(char*)*(length + 7)); //add 1 for NULL and 6 for "Int_\"\""
+				strcpy(ret, "Int \"");
+				strncat(ret, tk->token + start, length);
+				strcat(ret, "\"\0");
+			}
+
+		}//End int/float check
+		
+
+	}
+	/*IS it a white space, increment via recursion*/
+	else if (isblank(tk->token[tk->pos])){
+		tk->pos++;
+		ret = TKGetNextToken(tk);
+	}
+	else{
+		switch (tk->token[tk->pos]){
+		case '\0': ret = NULL; break;
+			/*Non-AlphaNumeric cases*/
+		default: break;
+			/*This is a case we do not test for*/
+		} 
+	}
+
+
+	return ret;
 }
 
 /*
@@ -195,6 +187,7 @@ char *TKGetNextToken(TokenizerT * tk) {
 */
 
 int main(int argc, char **argv) {
+	//Input validation
 	/*
 	if (argc != 2){
 		// input should include a string 
@@ -203,44 +196,22 @@ int main(int argc, char **argv) {
 	}
 
 	printf("%s\n", argv[1]); //Taken out for inline Testing
-
-	//make the scope of argv[1] global
-	input = argv[1];
+	TokenizerT *tkStream = TKCreate(argv[1]); //Initalize the TokenStream
 	*/
-	input = "Hello123\n";
-	int length = strlen(input);
-	printf("%s\n", input);
+	char* stream = " love 1.2e-345";
+	char* tok = NULL;
+	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
+	int length = strlen(tkStream->token);
+	printf("%s\nStarting:\n", tkStream->token);
 
-	//Return for strings of tokens
-	char* result = NULL;
-
-	//create a tokenizer to use
-	TokenizerT *tokenizer = NULL;
-	printf("Begin Tokenizing\n");
+	/*
+	loop over TKGetNextToken*/
 	do{
-		tokenizer = stringParse(); //creates the next token
-		result = TKGetNextToken(tokenizer); //transform token into string and free
-		if (result){ //If we got a result
-			printf("%s\n", result);
-		}
-	} while (pos < length);
-	printf("End Tokenizing\n");
-	
+		tok = TKGetNextToken(tkStream);
+		printf("%s\n", tok);
+		free(tok);
+	} while (tkStream->pos < length);
 
-	/* Sangini Code
-	if(tokenizer != NULL){
-	//go through the string and tokenize it here
-	char *tok = TKGetNextToken(tokenizer);
-	while(tok != 0){
-	//print the token and the type
-	}
-	//destroy the tokenizer. mission complete.
-	TKDestroy(tokenizer);
-	} else {
-	printf("Error building tokenizer.\n");
-	}
-	*/
-
+	TKDestroy(tkStream);
 	return 0;
 }
-
