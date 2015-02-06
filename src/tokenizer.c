@@ -116,7 +116,7 @@ char *TKGetNextToken(TokenizerT * tk) {
 			}
 
 			else/*OCT*/{
-				while (isdigit(tk->token[++tk->pos]))
+				while (isdigit(tk->token[tk->pos++]))
 					length++;
 				ret = (char*)malloc(sizeof(char*)*(length + 7)); //add 1 for NULL and 6 for "Oct_\"\""
 				strcpy(ret, "Oct \"");
@@ -161,16 +161,26 @@ char *TKGetNextToken(TokenizerT * tk) {
 		
 
 	}
-	/*IS it a white space, increment via recursion*/
-	else if (isblank(tk->token[tk->pos])){
-		tk->pos++;
-		ret = TKGetNextToken(tk);
-	}
 	else{
 		switch (tk->token[tk->pos]){
+		case 0x20: //space
+		case 0x09: //tab
+		case 0x0a: //newline
+		case 0x0d: //carraigeReturn
+			tk->pos++;
+			ret = TKGetNextToken(tk); //continue through the stream
+			break;
+		case '/':
+			tk->pos++;
+			if (tk->token[tk->pos] == '*'){
+				while ((tk->token[tk->pos+1] != '*' && tk->token[tk->pos + 2] != '/') && tk->token[tk->pos] != '\0')
+				{/*loop*/tk->pos++;				}
+			}
+			else if (tk->pos + 1 == '/'){/*Loop till end of line*/}
+		
 		case '\0': ret = NULL; break;
 			/*Non-AlphaNumeric cases*/
-		default: break;
+		default: tk->pos++;  break;
 			/*This is a case we do not test for*/
 		} 
 	}
@@ -198,12 +208,12 @@ int main(int argc, char **argv) {
 	printf("%s\n", argv[1]); //Taken out for inline Testing
 	TokenizerT *tkStream = TKCreate(argv[1]); //Initalize the TokenStream
 	*/
-	char* stream = " love 1.2e-345";
+	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 Bobman Batman CaptMercua";
 	char* tok = NULL;
 	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
 	int length = strlen(tkStream->token);
 	printf("%s\nStarting:\n", tkStream->token);
-
+	
 	/*
 	loop over TKGetNextToken*/
 	do{
