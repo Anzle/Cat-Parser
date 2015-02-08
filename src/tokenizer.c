@@ -87,7 +87,7 @@ char *TKGetNextToken(TokenizerT * tk) {
 	char* ret = NULL;
 	char flag= '0';
 
-	/*Beging parsing*/
+	/*Begin parsing*/
 	/*Word*/
 	if (isalpha(tk->token[tk->pos])){
 		length++;
@@ -99,6 +99,7 @@ char *TKGetNextToken(TokenizerT * tk) {
 		strcat(ret, "\"\0");
 		
 	}
+	/*Number*/
 	else if (isdigit(tk->token[tk->pos])){
 		length++;
 		/*Begin oct/hex check*/
@@ -158,15 +159,13 @@ char *TKGetNextToken(TokenizerT * tk) {
 			}
 
 		}//End int/float check
-		
-
 	}
 	else{
 		switch (tk->token[tk->pos]){
 		case 0x20: //space
 		case 0x09: //tab
 		case 0x0a: //newline
-		case 0x0d: //carraigeReturn
+		case 0x0d: //carriageReturn
 			tk->pos++;
 			ret = TKGetNextToken(tk); //continue through the stream
 			break;
@@ -174,10 +173,43 @@ char *TKGetNextToken(TokenizerT * tk) {
 			tk->pos++;
 			if (tk->token[tk->pos] == '*'){
 				while ((tk->token[tk->pos+1] != '*' && tk->token[tk->pos + 2] != '/') && tk->token[tk->pos] != '\0')
-				{/*loop*/tk->pos++;				}
+				{/*loop*/tk->pos++;	}
+				tk->pos= tk->pos+3;
+				ret = TKGetNextToken(tk); //continue through the stream
+				break;
 			}
-			else if (tk->pos + 1 == '/'){/*Loop till end of line*/}
-		
+			else if (tk->token[tk->pos] == '/'){
+				/*Loop till end of line*/
+				while((tk->token[tk->pos+1] != 0x0a) && tk->token[tk->pos] != '\0')
+				{tk->pos++; }
+				tk->pos = tk->pos+2;
+				ret = TKGetNextToken(tk); //continue through the stream
+				break;
+			}
+		case '"':
+			length++;
+			while ((tk->token[tk->pos+1] != '"') && tk->token[tk->pos] != '\0'){
+				length++;
+				tk->pos++;
+			}
+			ret = (char*)malloc(sizeof(char*)*(length + 8)); //add 1 for NULL and 7 for "String_\"\""
+			strcpy(ret, "String ");
+			strncat(ret, tk->token+start, length+1);
+			strcat(ret, "\0");
+			tk->pos = tk->pos+2;
+			break;
+		case '\'':
+			length++;
+			while ((tk->token[tk->pos+1] != '\'') && tk->token[tk->pos] != '\0'){
+				length++;
+				tk->pos++;
+			}
+			ret = (char*)malloc(sizeof(char*)*(length + 8)); //add 1 for NULL and 7 for "String_\"\""
+			strcpy(ret, "String ");
+			strncat(ret, tk->token+start, length+1);
+			strcat(ret, "\0");
+			tk->pos = tk->pos+2;
+			break;			
 		case '\0': ret = NULL; break;
 			/*Non-AlphaNumeric cases*/
 		default: tk->pos++;  break;
@@ -208,7 +240,7 @@ int main(int argc, char **argv) {
 	printf("%s\n", argv[1]); //Taken out for inline Testing
 	TokenizerT *tkStream = TKCreate(argv[1]); //Initalize the TokenStream
 	*/
-	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 Bobman Batman CaptMercua";
+	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 Bobman Batman CaptMercua //This is a comment \n this is not";
 	char* tok = NULL;
 	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
 	int length = strlen(tkStream->token);
