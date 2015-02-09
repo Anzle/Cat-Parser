@@ -97,7 +97,6 @@ char *TKGetNextToken(TokenizerT * tk) {
 		strcpy(ret, "Word \"");
 		strncat(ret, tk->token+start, length);
 		strcat(ret, "\"\0");
-		
 	}
 	/*Number*/
 	else if (isdigit(tk->token[tk->pos])){
@@ -186,6 +185,27 @@ char *TKGetNextToken(TokenizerT * tk) {
 				ret = TKGetNextToken(tk); //continue through the stream
 				break;
 			}
+			else{
+				//Operators that start with /
+				length++;
+				if(tk->token[tk->pos] == '='){
+					/* /= */
+					length++;
+					ret = (char*) malloc(sizeof(char*)*(length + 16));
+					strcpy(ret, "Divideequals \"");
+					strncat(ret, tk->token+start, length);
+					strcat(ret, "\"\0");
+					tk->pos = tk->pos + 1;
+					break;
+				} else {
+					/* / */
+					ret = (char*) malloc(sizeof(char*)*(length + 10));
+					strcpy(ret, "Divide \"");
+					strncat(ret, tk->token+start, length);
+					strcat(ret, "\"\0");
+					break;
+				}
+			}
 		case '"':
 			length++;
 			while ((tk->token[tk->pos+1] != '"') && tk->token[tk->pos] != '\0'){
@@ -209,10 +229,385 @@ char *TKGetNextToken(TokenizerT * tk) {
 			strncat(ret, tk->token+start, length+1);
 			strcat(ret, "\0");
 			tk->pos = tk->pos+2;
-			break;			
+			break;	
+		case '+':
+			//Operators that start with +
+			length++;
+			if(tk->token[tk->pos+1] == '+'){
+				/* ++ */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 12));
+				strcpy(ret, "Plusplus \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* += */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 14));
+				strcpy(ret, "Plusequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* + */
+				ret = (char*) malloc(sizeof(char*)*(length + 8));
+				strcpy(ret, "Plus \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '-':
+			//Operators that start with -
+			length++;
+			if(tk->token[tk->pos+1] == '-'){
+				/* -- */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 14));
+				strcpy(ret, "Minusminus \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* -= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 15));
+				strcpy(ret, "Minusequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '>'){
+				/* -> */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 18));
+				strcpy(ret, "Struct Pointer \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* - */
+				ret = (char*) malloc(sizeof(char*)*(length + 8));
+				strcpy(ret, "Minus \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '*':
+			//Operators that start with *
+			length++;
+			if(tk->token[tk->pos+1] == '='){
+				/* *= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 15));
+				strcpy(ret, "Timesequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* * */
+				ret = (char*) malloc(sizeof(char*)*(length + 12));
+				strcpy(ret, "Multiply \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}	
+		case '!':
+			//Operators that start with !
+			length++;
+			if(tk->token[tk->pos+1] == '='){
+				/* != */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 12));
+				strcpy(ret, "Notequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* ! */
+				ret = (char*) malloc(sizeof(char*)*(length + 7));
+				strcpy(ret, "Not \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '=':
+			//Operators that start with =
+			length++;
+			if(tk->token[tk->pos+1] == '='){
+				/* == */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 17));
+				strcpy(ret, "Booleanequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* = */
+				ret = (char*) malloc(sizeof(char*)*(length + 10));
+				strcpy(ret, "Equals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '%':
+			//Operators that start with %
+			length++;
+			if(tk->token[tk->pos+1] == '='){
+				/* %= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 16));
+				strcpy(ret, "Moduloequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* % */
+				ret = (char*) malloc(sizeof(char*)*(length + 10));
+				strcpy(ret, "Modulo \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '^':
+			//Operators that start with ^
+			length++;
+			if(tk->token[tk->pos+1] == '='){
+				/* ^= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 13));
+				strcpy(ret, "Xorequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* ^ */
+				ret = (char*) malloc(sizeof(char*)*(length + 16));
+				strcpy(ret, "Exclusive Or \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '&':
+			//Operators that start with &
+			length++;
+			if(tk->token[tk->pos+1] == '&'){
+				/* && */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 15));
+				strcpy(ret, "Boolean And \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* &= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 13));
+				strcpy(ret, "Andequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* & */
+				ret = (char*) malloc(sizeof(char*)*(length + 11));
+				strcpy(ret, "Bit And \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '|':
+			//Operators that start with |
+			length++;
+			if(tk->token[tk->pos+1] == '|'){
+				/* || */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 14));
+				strcpy(ret, "Boolean Or \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* |= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 13));
+				strcpy(ret, "Orequals \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* | */
+				ret = (char*) malloc(sizeof(char*)*(length + 10));
+				strcpy(ret, "Bit Or \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '<':
+			//Operators that start with <
+			length++;
+			if((tk->token[tk->pos+1] == '<') && (tk->token[tk->pos+2] == '=')){
+				/* <<= */
+				length += 2;
+				ret = (char*) malloc(sizeof(char*)*(length + 20));
+				strcpy(ret, "Left Shift Equal \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 3;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* <= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 17));
+				strcpy(ret, "Less or Equal \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '<'){
+				/* << */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 14));
+				strcpy(ret, "Left Shift \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* < */
+				ret = (char*) malloc(sizeof(char*)*(length + 13));
+				strcpy(ret, "Less than \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '>':
+			//Operators that start with >
+			length++;
+			if((tk->token[tk->pos+1] == '>') && (tk->token[tk->pos+2] == '=')){
+				/* >>= */
+				length += 2;
+				ret = (char*) malloc(sizeof(char*)*(length + 21));
+				strcpy(ret, "Right Shift Equal \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 3;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '='){
+				/* >= */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 20));
+				strcpy(ret, "Greater or Equal \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			}
+			else if(tk->token[tk->pos+1] == '>'){
+				/* >> */
+				length++;
+				ret = (char*) malloc(sizeof(char*)*(length + 15));
+				strcpy(ret, "Right Shift \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos = tk->pos + 2;
+				break;
+			} else {
+				/* > */
+				ret = (char*) malloc(sizeof(char*)*(length + 16));
+				strcpy(ret, "Greater than \"");
+				strncat(ret, tk->token+start, length);
+				strcat(ret, "\"\0");
+				tk->pos++;
+				break;
+			}
+		case '~':
+			/* ~ */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 20));
+			strcpy(ret, "One's Complement \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case ',':
+			/* , */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 16));
+			strcpy(ret, "Discard Left \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case '[':
+			/* [ */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 14));
+			strcpy(ret, "Left Brace \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case ']':
+			/* ] */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 15));
+			strcpy(ret, "Right Brace \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case '(':
+			/* ( */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 14));
+			strcpy(ret, "Open Paren \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case ')':
+			/* ) */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 15));
+			strcpy(ret, "Close Paren \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
 		case '\0': ret = NULL; break;
 			/*Non-AlphaNumeric cases*/
-		default: tk->pos++;  break;
+		default: tk->pos++; ret = TKGetNextToken(tk); break;
 			/*This is a case we do not test for*/
 		} 
 	}
@@ -240,7 +635,7 @@ int main(int argc, char **argv) {
 	printf("%s\n", argv[1]); //Taken out for inline Testing
 	TokenizerT *tkStream = TKCreate(argv[1]); //Initalize the TokenStream
 	*/
-	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 Bobman Batman CaptMercua //This is a comment \n this is not";
+	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 ++Bobman Batman CaptMercua //This is a comment \n this is not \"This is a string in a quote\" \'this too\' + ++ += - -- -> -= * *=yup /hi /=wee ! != = == % %= ^ ^= & &= && | || |= < << <<= <= > >> >>= >= ~ , array[xyz ] function(int a)";
 	char* tok = NULL;
 	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
 	int length = strlen(tkStream->token);
