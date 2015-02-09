@@ -605,7 +605,7 @@ char *TKGetNextToken(TokenizerT * tk) {
 			strcat(ret, "\"\0");
 			tk->pos++;
 			break;
-		case '\0': ret = NULL; break;
+		case '\0': tk->pos++; ret = NULL; break;
 			/*Non-AlphaNumeric cases*/
 		default: tk->pos++; ret = TKGetNextToken(tk); break;
 			/*This is a case we do not test for*/
@@ -624,28 +624,31 @@ char *TKGetNextToken(TokenizerT * tk) {
 */
 
 int main(int argc, char **argv) {
-	//Input validation
 	/*
+	char* stream = "0023 \n 0xADFC \t edf98 h172678 ++Bobman Batman CaptMercua //This is a comment \n this is not \"This is a string in a quote\" \'this too\' + ++ += - -- -> -= * *=yup /hi /=wee ! != = == % %= ^ ^= & &= && | || |= < << <<= <= > >> >>= >= ~ , array[xyz ] function(int a)";
+	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
+	int length = strlen(tkStream->token);
+	printf("%s\nStarting:\n", tkStream->token);
+	*/
+	
+	//Input validation
 	if (argc != 2){
 		// input should include a string 
 		printf("Error: Invalid number of arguments.\n");
 		return 0;
 	}
 
-	printf("%s\n", argv[1]); //Taken out for inline Testing
+	//printf("%s\n", argv[1]); //Taken out for inline Testing
 	TokenizerT *tkStream = TKCreate(argv[1]); //Initalize the TokenStream
-	*/
-	char* stream = "0023 \n 0xADFC \t /*edf98*/ h172678 ++Bobman Batman CaptMercua //This is a comment \n this is not \"This is a string in a quote\" \'this too\' + ++ += - -- -> -= * *=yup /hi /=wee ! != = == % %= ^ ^= & &= && | || |= < << <<= <= > >> >>= >= ~ , array[xyz ] function(int a)";
-	char* tok = NULL;
-	TokenizerT *tkStream = TKCreate(stream); //Initalize the TokenStream
 	int length = strlen(tkStream->token);
-	printf("%s\nStarting:\n", tkStream->token);
 	
-	/*
-	loop over TKGetNextToken*/
+	
+	/*loop over TKGetNextToken*/
+	char* tok = NULL;
 	do{
 		tok = TKGetNextToken(tkStream);
-		printf("%s\n", tok);
+		if(tok != NULL)
+			printf("%s\n", tok);
 		free(tok);
 	} while (tkStream->pos < length);
 
