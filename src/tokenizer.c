@@ -1,4 +1,7 @@
 /*
+* Rob Williams and Sangini Shah
+* Section 1
+* CS214 PA1
 * tokenizer.c
 */
 #include <stdio.h>
@@ -358,8 +361,8 @@ char *TKGetNextToken(TokenizerT * tk) {
 				break;
 			} else {
 				/* = */
-				ret = (char*) malloc(sizeof(char*)*(length + 10));
-				strcpy(ret, "Equals \"");
+				ret = (char*) malloc(sizeof(char*)*(length + 14));
+				strcpy(ret, "Assignment \"");
 				strncat(ret, tk->token+start, length);
 				strcat(ret, "\"\0");
 				tk->pos++;
@@ -601,6 +604,33 @@ char *TKGetNextToken(TokenizerT * tk) {
 			length++;
 			ret = (char*) malloc(sizeof(char*)*(length + 15));
 			strcpy(ret, "Close Paren \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case '{':
+			/* { */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 23));
+			strcpy(ret, "Open Squiggly Brace \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case '}':
+			/* } */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 24));
+			strcpy(ret, "Close Squiggly Brace \"");
+			strncat(ret, tk->token+start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case ';':
+			/* ; */
+			length++;
+			ret = (char*) malloc(sizeof(char*)*(length + 13));
+			strcpy(ret, "Semicolon \"");
 			strncat(ret, tk->token+start, length);
 			strcat(ret, "\"\0");
 			tk->pos++;

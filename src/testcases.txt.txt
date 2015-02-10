@@ -1,0 +1,197 @@
+/* Rob Williams and Sangini Shah
+	Systems Programming PA1
+	Test Cases */
+	
+1) 
+input: ./tokenizer "today is a beautiful day"
+output:
+	Word "today"
+	Word "is"
+	Word "a"
+	Word "beautiful"
+	Word "day"
+
+2)
+input: ./tokenizer "0x4356abdc 0777 [] "
+output:
+	Hex "0x4356abdc"
+	Oct "0777"
+	Left Brace "["
+	Right Brace "]"
+
+3)
+input: ./tokenizer " array[xyz ] += pi 3.14159e-10 "
+output:
+	Word "array"
+	Left Brace "["
+	Word "xyz"
+	Right Brace "]"
+	Plusequals "+="
+	Word "pi"
+	Float "3.14159e-10"
+
+4)
+input: ./tokenizer " b = a+ 30.5"
+output:
+	Word "b"
+	Assignment "="
+	Word "a"
+	Plus "+"
+	Float "30.5"
+	
+5)
+input: ./tokenizer "a ++ c -b= words "
+output:
+	Word "a"
+	Plusplus "++"
+	Word "c"
+	Minus "-"
+	Word "b"
+	Assignment "="
+	Word "words"
+
+6)
+input: ./tokenizer " variable -- pointer -> var ; b -= 3"
+output:
+	Word "variable"
+	Minusminus "--"
+	Word "pointer"
+	Struct Pointer "->"
+	Word "var"
+	Semicolon ";"
+	Word "b"
+	Minusequals "-="
+	Int "3"
+
+7)
+input: ./tokenizer " bossman *= *struct / *aliens //comments are a thing comment /* flux capacitor */"
+output:
+	Word "bossman"
+	Timesequals "*="
+	Multiply "*"
+	Word "struct"
+	Divide "/"
+	Multiply "*"
+	Word "aliens"
+	
+8)
+input: ./tokenizer " function ( input ) { /* this is where code goes */ &var /= 68 0465 | 0x4726acdd } "
+output:
+	Word "function"
+	Open Paren "("
+	Word "input"
+	Close Paren ")"
+	Open Squiggle Brace "{"
+	Bit And "&"
+	Word "var"
+	Divideequals "/="
+	Int "68"
+	Oct "0465"
+	Bit Or "|"
+	Hex "0x4726acdd"
+	Close Squiggly Brace "}"
+
+9)
+input: ./tokenizer " bit &= 0361 (true && false) == false || (0xabcde |= 0234 != 0736)"
+output:
+	Word "bit"
+	Andequals "&="
+	Oct "0361"
+	Open Paren "("
+	Word "true"
+	Boolean And "&&"
+	Word "false"
+	Close Paren ")"
+	Booleanequals "=="
+	Word "false"
+	Boolean Or "||"
+	Open Paren "("
+	Hex "0xabcde"
+	Orequals "|="
+	Oct "0234"
+	Notequals "!="
+	Oct "0736"
+
+10)
+input: ./tokenizer " hey ! { c = 10 % 3; c %= 2; } "
+output:
+	Word "hey"
+	Not "!"
+	Open Squiggly Brace "{"
+	Word "c"
+	Assignment "="
+	Int "10"
+	Modulo "%"
+	Int "3"
+	Semicolon ";"
+	Word "c"
+	Moduloequals "%="
+	Int "2"
+	Semicolon ";"
+	
+11)
+input: ./tokenizer "~0263 a < 12 b> 14 d <= 123 e >= 34.6e-1"
+output:
+	One's Complement "~"
+	Oct "0263"
+	Word "a"
+	Less than "<"
+	Int "12"
+	Word "b"
+	Greater than ">"
+	Int "14"
+	Word "d"
+	Less or Equal "<="
+	Int "123"
+	Word "e"
+	Greater or Equal ">="
+	Float "34.6e-1"
+	
+12)
+input: ./tokenizer " a = 0245 a << 3 b = 0135 b >> 2 c = 0xabcd c >>= 2 d = 0x1234 d <<= 3 "
+output:
+	Word "a"
+	Assignment "="
+	Oct "0245"
+	Word "a"
+	Left Shift "<<"
+	Int "3"
+	Word "b"
+	Assignment "="
+	Oct "0135"
+	Word "b"
+	Right Shift ">>"
+	Int "2"
+	Word "c"
+	Assignment "="
+	Hex "0xabcd"
+	Word "c"
+	Right Shift Equal ">>="
+	Int "2"
+	Word "d"
+	Assignment "="
+	Hex "0x1234"
+	Word "d"
+	Left Shift Equal "<<="
+	Int "3"
+
+13)
+input: ./tokenizer " one = 1 two = 2 one ^ two three = 3 three ^= 5 ,yeah"
+output:
+	Word "one"
+	Assignment "="
+	Int "1"
+	Word "two"
+	Assignment "="
+	Int "2"
+	Word "one"
+	Exclusive Or "^"
+	Word "two"
+	Word "three"
+	Assignment "="
+	Int "3"
+	Word "three"
+	Xorequals "^="
+	Int "5"
+	Discard Left ","
+	Word "yeah"
