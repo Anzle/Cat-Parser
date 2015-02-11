@@ -195,3 +195,112 @@ output:
 	Int "5"
 	Discard Left ","
 	Word "yeah"
+
+14)
+input: ./tokenizer " switch var case '1': /*code*/ case '2': /*code*/ default: /*code*/ "
+output:
+	Keyword "switch"
+	Word "var"
+	Keyword "case"
+	String '1'
+	Colon ":"
+	Keyword "case"
+	String '2'
+	Colon ":"
+	Keyword "default"
+	Colon ":"
+	
+15)
+input: ./tokenizer " if (condition) {  default break; } else if elseif "
+output:
+	Keyword "if"
+	Open Paren "("
+	Word "condition"
+	Close Paren ")"
+	Open Squiggly Brace "{"
+	Keyword "default"
+	Keyword "break"
+	Semicolon ";"
+	Close Squiggly Brace "}"
+	Keyword "else"
+	Keyword "if"
+	Word "elseif"
+
+16)
+input: ./tokenizer "volatile while void unsigned int unsigned long union typedef Length "
+output:
+	Keyword "volatile"
+	Keyword "while"
+	Keyword "void"
+	Keyword "unsigned"
+	Keyword "int"
+	Keyword "unsigned"
+	Keyword "long"
+	Keyword "union"
+	Keyword "typedef"
+	Word "Length"
+	
+17)
+input: ./tokenizer "static sizeof signed short return register goto "
+output:
+	Keyword "static"
+	Keyword "sizeof"
+	Keyword "signed"
+	Keyword "short"
+	Keyword "return"
+	Keyword "register"
+	Keyword "goto"
+
+18)
+input: ./tokenizer "for (int x = 3; x < 2; x++) { float flt; enum extern double dbl; }"
+output:
+	Keyword "for"
+	Open Paren "("
+	Keyword "int"
+	Word "x"
+	Assignment "="
+	Int "3"
+	Semicolon ";"
+	Word "x"
+	Less than "<"
+	Int "2"
+	Semicolon ";"
+	Word "x"
+	Plusplus "++"
+	Close Paren ")"
+	Open Squiggly Brace "{"
+	Keyword "float"
+	Word "flt"
+	Semicolon ";"
+	Keyword "enum"
+	Keyword "extern"
+	Keyword "double"
+	Word "dbl"
+	Semicolon ";"
+	Close Squiggly Brace "}"
+
+19)
+input: ./tokenizer "do { /* this is a lot of code */ } while (5 < 10); default continue const char auto"
+output:
+	Keyword "do"
+	Open Squiggly Brace "{"
+	Close Squiggly Brace "}"
+	Keyword "while"
+	Open Paren "("
+	Int "5"
+	Less than "<"
+	Int "10"
+	Close Paren ")"
+	Semicolon ";"
+	Keyword "default"
+	Keyword "continue"
+	Keyword "const"
+	Keyword "char"
+	Keyword "auto"
+	
+20) Unrecognized characters
+input: ./tokenizer "@$+"
+output:
+	Unknown Input [0x40]
+	Unknown Input [0x24]
+	Plus "+"
