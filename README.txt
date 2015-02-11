@@ -1,8 +1,7 @@
-# Cat-Parser
-猫が大好き！
-pa1 cs214 :D
+Rob Williams and Sangini Shah
+pa1 cs214
 
-The Tokenizer (Cat-Parser) runs as follows:
+The Tokenizer runs as follows:
 A string is input as a command line argument. This string is copied and stored into a data structure called a Token and then is parsed on a token by token basis until the whole command line string has been read. Tokens are parsed out with the TKGetNextToken function as strings containing the Token_Type and the Token_Content, which produces output such as: 
 Hex "0x42"
 Word "Bob"
@@ -24,6 +23,38 @@ else check if the current character matches another class
 The Specifiers available are
 Words
 	Sub Set: C Key Words
+		auto
+		break
+		case
+		char
+		const
+		continue
+		default
+		do
+		double
+		else
+		enum
+		extern
+		float
+		for
+		goto
+		if
+		int
+		long
+		register
+		return
+		short
+		signed
+		sizeof
+		static
+		struct
+		switch
+		typedef
+		union
+		unsigned
+		void
+		volatile
+		while
 Numbers
 	Positive Ints
 	Floats are accepted in the following forms:
@@ -38,7 +69,28 @@ Numbers
 		0 is accepted as an Oct
 		089 is accepted as an Oct: This style of invalid input is up to the programmer to avoid.
 	Hex are accepted in the form of 0x with upper and lower case letters with characters of 0-f
-	
+C operators
+	Any of the following qualify as a C operator:
+	+, ++, +=
+	-, --, -=, ->
+	*, *=
+	/, /=
+	&, &=, &&
+	|, ||, |=
+	%, %=
+	!, !=
+	~
+	:
+	?
+	<, <<, <=, <<=
+	>, >>, >=, >>=
+	=, ==
+	^, ^=
+	,
+	[ ]
+	( )
+	{ }
+
 White space characters are
 	0x20 space
 	0x09 tab
