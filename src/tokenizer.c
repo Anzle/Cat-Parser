@@ -89,7 +89,10 @@ char *TKGetNextToken(TokenizerT * tk) {
 	int start = tk->pos;
 	char* ret = NULL;
 	char flag= '0';
-
+	/*Folowing used for unknown characters*/
+	char unkn;
+	int hex;
+	char hchar[3];
 	/*Begin parsing*/
 	/*Word*/
 	if (isalpha(tk->token[tk->pos])){
@@ -635,9 +638,39 @@ char *TKGetNextToken(TokenizerT * tk) {
 			strcat(ret, "\"\0");
 			tk->pos++;
 			break;
+		case '?':
+			/* ?*/
+			length++;
+			ret = (char*)malloc(sizeof(char*)*(length + 17));
+			strcpy(ret, "Question Mark \"");
+			strncat(ret, tk->token + start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+		case ':':
+			/* : */
+			length++;
+			ret = (char*)malloc(sizeof(char*)*(length + 9));
+			strcpy(ret, "Colon \"");
+			strncat(ret, tk->token + start, length);
+			strcat(ret, "\"\0");
+			tk->pos++;
+			break;
+
 		case '\0': tk->pos++; ret = NULL; break;
 			/*Non-AlphaNumeric cases*/
-		default: tk->pos++; ret = TKGetNextToken(tk); break;
+		default:
+			/*Unknown Characters*/			
+			unkn = tk->token[tk->pos];
+			hex = (unsigned int)unkn;
+			sprintf(hchar, "%.2x", hex);
+
+			ret = (char*)malloc(sizeof(char*)*(2 + 19));
+			strcpy(ret, "Unknown Input [0x");
+			strcat(ret, hchar);
+			strcat(ret, "]\0");
+			tk->pos++;
+			//ret = TKGetNextToken(tk); break;
 			/*This is a case we do not test for*/
 		} 
 	}
