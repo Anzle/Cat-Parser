@@ -356,8 +356,10 @@ char *TKGetNextToken(TokenizerT * tk) {
 			}
 
 			else/*OCT*/{
-				while (isdigit(tk->token[tk->pos++]))
+				while (isdigit(tk->token[tk->pos])){
 					length++;
+					tk->pos++;
+				}
 				ret = (char*)malloc(sizeof(char*)*(length + 7)); //add 1 for NULL and 6 for "Oct_\"\""
 				strcpy(ret, "Oct \"");
 				strncat(ret, tk->token + start, length);
